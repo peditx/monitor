@@ -9,89 +9,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0d0f12;
-            --card: #101216;
-            --muted: #9aa4b2;
-            --glass: rgba(255, 255, 255, 0.03);
-            --success: #22c55e;
-            --danger: #ef4444;
-            --running: #fb923c;
-            --idle: #4b5563;
+            --bg: #0d0f12; --card: #101216; --muted: #9aa4b2; --glass: rgba(255, 255, 255, 0.03);
+            --success: #22c55e; --danger: #ef4444; --running: #fb923c; --idle: #4b5563;
         }
         * { box-sizing: border-box; }
         html, body { height: 100%; }
         body {
-            margin: 0;
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-            background: linear-gradient(180deg, #060708 0%, #0c0f13 100%);
-            color: #e6eef6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            margin: 0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(180deg, #060708 0%, #0c0f13 100%); color: #e6eef6;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
         .wrap { max-width: 1200px; margin: 28px auto; padding: 20px; }
-        .header { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .header { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
         .branding { display: flex; gap: 16px; align-items: center; }
         .banner { height: 56px; width: auto; border-radius: 10px; object-fit: contain; box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6); }
         h1 { font-size: 18px; margin: 0; color: #f3f6fb; font-weight: 600; }
         .small { font-size: 13px; color: var(--muted); }
+        .controls { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            background: var(--glass); color: var(--muted); border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; transform: translateY(-2px); }
+        #tokenRow { display: none; gap: 8px; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; margin-top: 16px; justify-content: flex-end; }
+        .token-input {
+            padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04);
+            background: #0d0f12; color: var(--muted); min-width: 300px;
+        }
         #repoList { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-top: 20px; }
         .card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            padding: 14px;
+            position: relative; overflow: hidden; border-radius: 12px; padding: 14px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            cursor: pointer;
-            transition: transform .18s, box-shadow .18s;
-            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.03); box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+            display: flex; flex-direction: column; gap: 10px; cursor: pointer;
+            transition: transform .18s, box-shadow .18s; color: inherit;
         }
         .card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2, 6, 23, 0.7); }
         .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .name a { font-weight: 700; font-size: 14px; color: #f7fbff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; text-decoration: none; transition: color 0.2s; }
         .name a:hover { color: var(--running); }
         .status-pill { padding: 5px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; color: #08121a; flex-shrink: 0; }
-        .s-success { background: var(--success); }
-        .s-failure { background: var(--danger); }
-        .s-running { background: var(--running); }
-        .s-idle { background: var(--idle); color: #fff; opacity: 0.95; }
-        .glow {
-            position: absolute; inset: 0; z-index: 0; pointer-events: none;
-            filter: blur(24px); opacity: 0.18; transition: opacity .2s;
-        }
+        .s-success { background: var(--success); } .s-failure { background: var(--danger); }
+        .s-running { background: var(--running); } .s-idle { background: var(--idle); color: #fff; opacity: 0.95; }
+        .glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; filter: blur(24px); opacity: 0.18; transition: opacity .2s; }
         .glow.success { background: linear-gradient(90deg, rgba(34,197,94,0.12), rgba(34,197,94,0)); }
         .glow.failure { background: linear-gradient(90deg, rgba(239,68,68,0.12), rgba(239,68,68,0)); }
         .glow.running { background: linear-gradient(90deg, rgba(251,146,60,0.2), rgba(251,146,60,0)); animation: pulse 1.8s infinite; }
         .glow.idle { background: linear-gradient(90deg, rgba(75,85,99,0.06), rgba(75,85,99,0)); }
         @keyframes pulse { 0% { opacity: 0.15; } 50% { opacity: 0.3; } 100% { opacity: 0.15; } }
-        .bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-            z-index: 1;
-            position: relative;
-            margin-top: auto;
-            padding-top: 5px;
-        }
+        .bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; z-index: 1; position: relative; margin-top: auto; padding-top: 5px; }
         .meta-info { font-size: 12px; color: var(--muted); }
         .message-box { padding: 20px; text-align: center; color: var(--muted); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin-top: 20px; }
         .search-container { margin: 20px 0 10px; display: flex; justify-content: center; }
         .search-input {
             width: 100%; max-width: 480px; padding: 10px 16px; border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.04); background: var(--glass);
-            color: var(--muted); font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.04); background: var(--glass); color: var(--muted); font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         .search-input::placeholder { color: #6b7280; }
         .search-input:focus { outline: none; border-color: rgba(251, 146, 60, 0.5); box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1); }
-        .job-details {
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out, margin-top 0.4s ease-in-out, opacity 0.4s ease-in-out;
-            border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 0; opacity: 0;
-        }
+        .job-details { max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 0; opacity: 0; }
         .card.expanded .job-details { max-height: 200px; margin-top: 10px; padding-top: 5px; opacity: 1; overflow-y: auto; }
         .job-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; padding: 6px 4px; color: var(--muted); }
         .job-name { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 8px; }
@@ -102,11 +79,7 @@
         .job-status.running::before, .job-status.in_progress::before, .job-status.queued::before { background-color: var(--running); }
         .job-status.cancelled::before, .job-status.skipped::before { background-color: var(--idle); }
         footer { margin: 36px 0 12px; text-align: center; color: #778899; font-size: 13px; }
-        @media (max-width: 520px) {
-            .banner { height: 44px; }
-            .header { justify-content: center; text-align: center; }
-            .branding { flex-direction: column; }
-        }
+        @media (max-width: 520px) { .banner { height: 44px; } .header { justify-content: center; text-align: center; } .branding { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -119,7 +92,16 @@
                     <p class="small" style="margin:4px 0 0;">Live overview of all repositories. Click a card for details.</p>
                 </div>
             </div>
+            <div class="controls">
+                <button id="tokenBtn" class="btn">Token 🔒</button>
+            </div>
         </header>
+
+        <div id="tokenRow">
+            <input type="password" id="tokenInput" class="token-input" placeholder="Paste GitHub Personal Access Token (PAT)">
+            <button id="saveTokenBtn" class="btn">Save & Refresh</button>
+            <button id="clearTokenBtn" class="btn">Clear</button>
+        </div>
 
         <div class="search-container">
             <input type="text" id="searchInput" class="search-input" placeholder="🔍 Find a repository...">
@@ -133,72 +115,62 @@
     <script>
         const GITHUB_USERNAME = "PeDitX";
         const REPO_FETCH_CONCURRENCY = 8;
+        const TOKEN_KEY = 'gh_dashboard_pat';
 
-        const repoListContainer = document.getElementById('repoList');
-        const searchInput = document.getElementById('searchInput');
-        
-        const formatDuration = (seconds) => {
-            if (!seconds && seconds !== 0) return "";
-            seconds = Math.max(0, Math.floor(seconds));
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            if (h > 0) return `${h}h ${m}m ${s}s`;
-            if (m > 0) return `${m}m ${s}s`;
-            return `${s}s`;
-        };
-        
-        const formatTimestamp = (isoString) => {
-            if (!isoString) return '';
-            return new Date(isoString).toLocaleString(undefined, {
-                year: 'numeric', month: 'short', day: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
+        const ui = {
+            repoList: document.getElementById('repoList'),
+            searchInput: document.getElementById('searchInput'),
+            tokenBtn: document.getElementById('tokenBtn'),
+            tokenRow: document.getElementById('tokenRow'),
+            tokenInput: document.getElementById('tokenInput'),
+            saveTokenBtn: document.getElementById('saveTokenBtn'),
+            clearTokenBtn: document.getElementById('clearTokenBtn')
         };
 
-        const createEl = (tag, className, html) => {
-            const el = document.createElement(tag);
-            if (className) el.className = className;
-            if (html !== undefined) el.innerHTML = html;
-            return el;
+        const getToken = () => localStorage.getItem(TOKEN_KEY);
+        const setToken = (token) => {
+            if (token) localStorage.setItem(TOKEN_KEY, token);
+            else localStorage.removeItem(TOKEN_KEY);
         };
         
+        const formatDuration = (s) => {
+            if (!s && s !== 0) return ""; s = Math.max(0, Math.floor(s));
+            const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+            if(h > 0) return `${h}h ${m}m ${sec}s`;
+            if(m > 0) return `${m}m ${sec}s`;
+            return `${sec}s`;
+        };
+        const formatTimestamp = (iso) => iso ? new Date(iso).toLocaleString() : '';
+        const createEl = (tag, cls, html) => { const el = document.createElement(tag); if (cls) el.className = cls; if (html !== undefined) el.innerHTML = html; return el; };
+
         async function apiFetch(endpoint, params = {}) {
-            // New proxy URL structure
-            const url = new URL('/github-proxy', window.location.origin);
-            url.searchParams.set('path', endpoint);
-            for (const key in params) {
-                url.searchParams.set(key, params[key]);
+            const token = getToken();
+            if (!token) {
+                ui.repoList.innerHTML = `<div class="message-box">GitHub Token is not set. Please click the "Token 🔒" button to add your Personal Access Token.</div>`;
+                throw new Error("Token not set");
             }
+            const url = new URL(`https://api.github.com/${endpoint}`);
+            Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+            
+            const headers = {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'PeDitX-Dashboard-v3'
+            };
 
-            const response = await fetch(url.toString());
-            if (!response.ok) {
-                const message = `Error ${response.status}: Failed to fetch from API proxy. Check server logs.`;
-                console.error(message, await response.text());
-                throw new Error(message);
-            }
+            const response = await fetch(url.toString(), { headers });
+            if (response.status === 401) throw new Error("Unauthorized: Bad credentials. Please check your token.");
+            if (response.status === 403) throw new Error("Forbidden: Rate limit exceeded or token lacks permissions.");
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
             return response.json();
         }
 
-        async function fetchAllUserRepos(username) {
-            let allRepos = [];
-            let page = 1;
-            let keepFetching = true;
-
+        async function fetchAllUserRepos() {
+            let allRepos = [], page = 1, keepFetching = true;
             while (keepFetching) {
-                try {
-                    const repos = await apiFetch(`users/${username}/repos`, { type: 'owner', sort: 'updated', per_page: 100, page: page });
-                    if (repos.length > 0) {
-                        allRepos = allRepos.concat(repos.map(repo => repo.name));
-                        page++;
-                    } else {
-                        keepFetching = false;
-                    }
-                } catch (err) {
-                    repoListContainer.innerHTML = `<div class="message-box">Failed to fetch repositories. This could be due to an invalid or missing GitHub Token on the server. Please check the Cloudflare Pages function logs for details.</div>`;
-                    keepFetching = false;
-                    return [];
-                }
+                const repos = await apiFetch(`users/${GITHUB_USERNAME}/repos`, { type: 'owner', sort: 'updated', per_page: 100, page });
+                if (repos.length > 0) { allRepos.push(...repos.map(r => r.name)); page++; }
+                else { keepFetching = false; }
             }
             return allRepos;
         }
@@ -208,49 +180,41 @@
                 const data = await apiFetch(`repos/${GITHUB_USERNAME}/${repoName}/actions/runs`, { per_page: 1 });
                 if (data.total_count > 0 && data.workflow_runs.length > 0) {
                     const run = data.workflow_runs[0];
-                    let statusClass = 'idle';
-                    if (run.status === 'in_progress' || run.status === 'queued') statusClass = 'running';
-                    else if (run.status === 'completed') statusClass = (run.conclusion === 'success') ? 'success' : 'failure';
+                    let statusClass = run.status === 'in_progress' || run.status === 'queued' ? 'running' :
+                                      run.status === 'completed' ? (run.conclusion === 'success' ? 'success' : 'failure') : 'idle';
 
                     let runtime = '';
-                    if (run.status === 'completed') {
-                        const start = new Date(run.run_started_at || run.created_at);
-                        const end = new Date(run.updated_at);
-                        runtime = formatDuration((end - start) / 1000);
-                    } else {
-                        const start = new Date(run.run_started_at || run.created_at);
-                        runtime = formatDuration((Date.now() - start) / 1000) + ' (running)';
+                    if (run.run_started_at) {
+                        const start = new Date(run.run_started_at);
+                        const end = run.status === 'completed' ? new Date(run.updated_at) : new Date();
+                        runtime = formatDuration((end - start) / 1000) + (run.status !== 'completed' ? ' (running)' : '');
                     }
                     
                     let jobs = [];
                     if (run.jobs_url) {
-                        const jobsUrlPath = new URL(run.jobs_url).pathname.substring(1).replace('api.github.com/', ''); // Make path relative
-                         try {
+                        const jobsUrlPath = new URL(run.jobs_url).pathname.substring(1).replace('api.github.com/', '');
+                        try {
                             const jobsData = await apiFetch(jobsUrlPath);
                             if (jobsData && jobsData.jobs) {
-                                jobs = jobsData.jobs.map(job => ({ name: job.name, status: job.status, conclusion: job.conclusion }));
+                                jobs = jobsData.jobs.map(j => ({ name: j.name, status: j.status, conclusion: j.conclusion }));
                             }
                         } catch (jobError) { console.warn(`Could not fetch jobs for ${repoName}:`, jobError.message); }
                     }
-
                     return { repo: repoName, statusClass, statusText: run.conclusion || run.status, runtime, timestamp: run.updated_at, link: run.html_url, jobs };
                 }
             } catch (error) { console.warn(`Could not fetch action status for ${repoName}:`, error.message); }
             return { repo: repoName, statusClass: 'idle', statusText: 'No Actions', runtime: '', timestamp: null, link: `https://github.com/${GITHUB_USERNAME}/${repoName}`, jobs: [] };
         }
-        
+
         function renderCard(info) {
             const card = createEl('div', 'card');
             card.title = `Click to see job details for ${info.repo}`;
-
             const glow = createEl('div', `glow ${info.statusClass}`);
             
             const top = createEl('div', 'top');
             const nameWrapper = createEl('div', 'name');
             const nameLink = createEl('a', '', info.repo);
-            nameLink.href = info.link;
-            nameLink.target = '_blank';
-            nameLink.rel = 'noopener noreferrer';
+            nameLink.href = info.link; nameLink.target = '_blank'; nameLink.rel = 'noopener noreferrer';
             nameLink.addEventListener('click', (e) => e.stopPropagation());
             nameWrapper.append(nameLink);
 
@@ -260,12 +224,12 @@
             const jobDetails = createEl('div', 'job-details');
             if (info.jobs && info.jobs.length > 0) {
                 info.jobs.forEach(job => {
-                    const jobRow = createEl('div', 'job-row');
-                    const jobName = createEl('span', 'job-name', job.name);
-                    let jobStatusClass = job.conclusion || job.status;
-                    const jobStatus = createEl('span', `job-status ${jobStatusClass}`, job.conclusion || job.status);
-                    jobRow.append(jobName, jobStatus);
-                    jobDetails.append(jobRow);
+                    const row = createEl('div', 'job-row');
+                    const name = createEl('span', 'job-name', job.name);
+                    const statusClass = job.conclusion || job.status;
+                    const status = createEl('span', `job-status ${statusClass}`, statusClass);
+                    row.append(name, status);
+                    jobDetails.append(row);
                 });
             }
 
@@ -275,68 +239,58 @@
             bottom.append(runtime, timestamp);
 
             card.append(glow, top, jobDetails, bottom);
-
-            card.addEventListener('click', () => {
-                if (info.jobs && info.jobs.length > 0) card.classList.toggle('expanded');
-            });
-
+            card.addEventListener('click', () => card.classList.toggle('expanded'));
             return card;
         }
 
-        function showLoadingSkeleton(count = 12) {
-            repoListContainer.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const skeleton = createEl('div', 'card');
-                skeleton.style.animation = `pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) ${i * 0.1}s infinite`;
-                skeleton.innerHTML = `<div style="height: 14px; width: 60%; background: var(--glass); border-radius: 6px; margin-bottom: 14px;"></div><div style="height: 12px; width: 40%; background: var(--glass); border-radius: 6px; margin-top: auto;"></div>`;
-                repoListContainer.appendChild(skeleton);
-            }
-        }
+        const showLoadingSkeleton = () => { ui.repoList.innerHTML = Array(12).fill('').map(() => `<div class="card"><div style="height: 14px; width: 60%; background: var(--glass); border-radius: 6px; margin-bottom: 14px;"></div><div style="height: 12px; width: 40%; background: var(--glass); border-radius: 6px; margin-top: auto;"></div></div>`).join(''); };
         
-        async function processReposInChunks(repoNames, processFn, chunkSize) {
+        async function processInChunks(items, fn, chunkSize) {
             let results = [];
-            for (let i = 0; i < repoNames.length; i += chunkSize) {
-                const chunk = repoNames.slice(i, i + chunkSize);
-                const promises = chunk.map(processFn);
-                const chunkResults = await Promise.all(promises);
-                results = results.concat(chunkResults);
+            for (let i = 0; i < items.length; i += chunkSize) {
+                const chunk = items.slice(i, i + chunkSize);
+                results.push(...await Promise.all(chunk.map(fn)));
             }
             return results;
         }
 
-        function filterRepositories() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const cards = repoListContainer.querySelectorAll('.card');
-            cards.forEach(card => {
-                const repoName = card.querySelector('.name a')?.textContent.toLowerCase();
-                card.style.display = (repoName && repoName.includes(searchTerm)) ? 'flex' : 'none';
+        const filterRepos = () => {
+            const term = ui.searchInput.value.toLowerCase();
+            ui.repoList.querySelectorAll('.card').forEach(card => {
+                const name = card.querySelector('.name a')?.textContent.toLowerCase();
+                card.style.display = name?.includes(term) ? 'flex' : 'none';
             });
-        }
+        };
 
         async function main() {
-            showLoadingSkeleton();
-            const repoNames = await fetchAllUserRepos(GITHUB_USERNAME);
-            if (repoNames.length === 0) return;
+            try {
+                showLoadingSkeleton();
+                let repoNames = await fetchAllUserRepos();
+                let allInfos = await processInChunks(repoNames, getLatestWorkflowRun, REPO_FETCH_CONCURRENCY);
+                
+                allInfos = allInfos.filter(info => info.statusText !== 'No Actions');
+                allInfos.sort((a, b) => {
+                    const p = { 'running': 3, 'failure': 2, 'success': 1, 'idle': 0 };
+                    return (p[b.statusClass] || 0) - (p[a.statusClass] || 0) || a.repo.localeCompare(b.repo);
+                });
 
-            let allRepoInfos = await processReposInChunks(repoNames, getLatestWorkflowRun, REPO_FETCH_CONCURRENCY);
-            
-            allRepoInfos = allRepoInfos.filter(info => info.statusText !== 'No Actions');
-
-            allRepoInfos.sort((a, b) => {
-                const priority = { 'running': 3, 'failure': 2, 'success': 1, 'idle': 0 };
-                return (priority[b.statusClass] || 0) - (priority[a.statusClass] || 0) || a.repo.localeCompare(b.repo);
-            });
-
-            repoListContainer.innerHTML = '';
-            allRepoInfos.forEach(info => repoListContainer.appendChild(renderCard(info)));
-
-            filterRepositories();
+                ui.repoList.innerHTML = '';
+                allInfos.forEach(info => ui.repoList.appendChild(renderCard(info)));
+                filterRepos();
+            } catch (error) {
+                console.error("Dashboard Error:", error.message);
+                if (!getToken()) return; // Message is already shown
+                ui.repoList.innerHTML = `<div class="message-box">${error.message}</div>`;
+            }
         }
 
-        searchInput.addEventListener('input', filterRepositories);
+        ui.tokenBtn.addEventListener('click', () => { ui.tokenRow.style.display = ui.tokenRow.style.display === 'flex' ? 'none' : 'flex'; });
+        ui.saveTokenBtn.addEventListener('click', () => { setToken(ui.tokenInput.value.trim()); ui.tokenRow.style.display = 'none'; main(); });
+        ui.clearTokenBtn.addEventListener('click', () => { setToken(null); ui.tokenInput.value = ''; ui.tokenRow.style.display = 'none'; main(); });
+        ui.searchInput.addEventListener('input', filterRepos);
 
         main();
-        setInterval(main, 60000);
+        setInterval(main, 90000);
     </script>
 </body>
 </html>
