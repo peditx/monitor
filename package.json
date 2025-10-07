@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "build": "echo 'No build step required, just deploying functions.'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
